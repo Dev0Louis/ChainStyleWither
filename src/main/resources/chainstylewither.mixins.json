@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "dev.louis.chainstylewither.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+  ],
+  "mixins": [
+    "AttributeSupplierBuilderAccessor",
+    "WitherBossMixin",
+    "WitherSkullMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

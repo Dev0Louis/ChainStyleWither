@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "chainstylewither",
+  "version": "${version}",
+  "name": "Chain Style Wither",
+  "description": "This mod brings the behavior of Wither to complete INSANITY!",
+  "authors": [
+    "MORIMORI0317",
+    "Louis"
+  ],
+  "contact": {
+    "sources": "https://github.com/Dev0Louis/ChainStyleWither",
+    "issues": "https://github.com/Dev0Louis/ChainStyleWither/issues"
+  },
+  "license": "GNU LGPLv3",
+  "icon": "assets/chainstylewither/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.louis.chainstylewither.fabric.ChainStyleWitherFabric"
+    ]
+  },
+  "mixins": [
+    "chainstylewither.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.20"
+  }
+}
