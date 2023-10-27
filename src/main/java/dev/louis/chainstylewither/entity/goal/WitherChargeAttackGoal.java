@@ -6,6 +6,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -96,9 +99,15 @@ public class WitherChargeAttackGoal extends Goal {
             ((ChainStyleWitherBoss) mob).setBlockBreakingCooldown(1);
             List<Entity> entities = this.mob.getWorld().getOtherEntities(this.mob, this.mob.getBoundingBox());
             for (Entity entity : entities) {
-                if(entity instanceof PlayerEntity player) {
+                if(entity instanceof ServerPlayerEntity player) {
+                    if(player.isBlocking()) {
+                        this.mob.tryAttack(player);
+                        //player.damage(this.mob.getWorld().getDamageSources().mobAttack(this.mob), 15.5f);
+                        player.getServerWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS);
+                        this.chargeTick = 0;
+                    }
                     player.damage(player.getWorld().getDamageSources().mobAttack(this.mob), 6.5f);
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10*20, 5), this.mob);
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10*20, 7), this.mob);
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 10*20, 3), this.mob);
                 }
             }

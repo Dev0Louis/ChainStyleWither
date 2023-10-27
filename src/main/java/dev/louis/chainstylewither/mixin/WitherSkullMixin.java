@@ -30,7 +30,7 @@ public abstract class WitherSkullMixin extends ExplosiveProjectileEntity {
 
     @ModifyConstant(method = "onCollision", constant = @Constant(floatValue = 1F))
     private float biggerBoom(float constant) {
-        return constant* 1.55F;
+        return constant* 1.8F;
     }
 
 

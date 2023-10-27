@@ -3,7 +3,7 @@ package dev.louis.chainstylewither.config;
 public class DefaultConfig implements Config {
     @Override
     public boolean isEnableBounceBlueWitherSkull() {
-        return true;
+        return false;
     }
 
     @Override

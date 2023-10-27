@@ -20,6 +20,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.ServerWorldAccess;
@@ -74,6 +75,46 @@ public abstract class WitherBossMixin extends HostileEntity implements ChainStyl
     )
     private static double higherMaxHealth(double constant) {
         return constant * (ChainStyleWither.getConfig().isEnableALotHealth() ? 6.0 : 1.0);
+    }
+
+    /**@ModifyConstant(
+            method = "mobTick",
+            constant = @Constant(intValue = 10),
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/entity/mob/HostileEntity;mobTick()V"
+                    ),
+                    to = @At(
+                            value = "FIELD",
+                            target = "Lnet/minecraft/entity/boss/WitherEntity;random:Lnet/minecraft/util/math/random/Random;",
+                            ordinal = 0
+                    )
+            )
+    )
+    public int noSkullCooldown(int cooldown) {
+        return 0;
+    }
+
+    @Redirect(
+            method = "mobTick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I",
+                    ordinal = 0
+            )
+    )
+    public int noSkullCooldown(Random instance, int i) {
+        return 0;
+    }**/
+
+    @ModifyConstant(
+            method = "mobTick",
+            constant = @Constant(intValue = 40)
+    )
+    private int lessCooldown(int i) {
+        if(shouldRenderOverlay())return i/10;
+        return i/2;
     }
 
     protected WitherBossMixin(EntityType<? extends HostileEntity> entityType, World level) {
@@ -262,7 +303,8 @@ public abstract class WitherBossMixin extends HostileEntity implements ChainStyl
                             WitherSkeletonEntity witherSkeleton = new WitherSkeletonEntity(EntityType.WITHER_SKELETON, getWorld());
                             witherSkeleton.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
                             witherSkeleton.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 100000, 3, false, false));
-                            witherSkeleton.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100000, 3, false, false));
+                            witherSkeleton.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 100000, 2, false, false));
+                            witherSkeleton.setTarget(this.getTarget());
                             witherSkeleton.initialize((ServerWorldAccess) getWorld(), getWorld().getLocalDifficulty(getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
                             getWorld().spawnEntity(witherSkeleton);
                         }
