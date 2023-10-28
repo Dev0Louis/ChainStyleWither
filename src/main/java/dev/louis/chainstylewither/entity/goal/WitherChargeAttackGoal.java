@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class WitherChargeAttackGoal extends Goal {
-    public static final int chargeTime = 75;
+    public static final int chargeTime = 100;
     public static final int chargeHoldTime = 50;
     private final WitherEntity mob;
     @Nullable
@@ -87,10 +87,11 @@ public class WitherChargeAttackGoal extends Goal {
             if (target != null) {
                 this.mob.getLookControl().lookAt(target);
                 double yDifference = target.getY() - this.mob.getY();
-                lookAt = mob.getRotationVector().add(0, yDifference/4F, 0);
-                if(Math.abs(yDifference) > 10) {
-                    lookAt = mob.getRotationVector().multiply(0.2, 1, 0.2);
-                }
+                lookAt = mob.getRotationVector().add(0, yDifference/20f, 0);
+
+                /**if(Math.abs(yDifference) > 12) {
+                    lookAt = mob.getRotationVector().multiply(1, 1, 0.2);
+                }**/
                 bodyRot = mob.bodyYaw;
                 mob.setBodyYaw(bodyRot);
                 mob.setVelocity(Vec3d.ZERO);
@@ -100,21 +101,20 @@ public class WitherChargeAttackGoal extends Goal {
             List<Entity> entities = this.mob.getWorld().getOtherEntities(this.mob, this.mob.getBoundingBox());
             for (Entity entity : entities) {
                 if(entity instanceof ServerPlayerEntity player) {
+                    boolean bl = target.damage(this.mob.getDamageSources().mobAttack(this.mob), 20f);
                     if(player.isBlocking()) {
-                        this.mob.tryAttack(player);
-                        //player.damage(this.mob.getWorld().getDamageSources().mobAttack(this.mob), 15.5f);
                         player.getServerWorld().playSound(null, player.getBlockPos(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.PLAYERS);
-                        this.chargeTick = 0;
                     }
-                    player.damage(player.getWorld().getDamageSources().mobAttack(this.mob), 6.5f);
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10*20, 7), this.mob);
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 10*20, 3), this.mob);
+                    player.setVelocity(this.mob.getVelocity().multiply(0.8));
+                    //player.damage(player.getWorld().getDamageSources().mobAttack(this.mob), 6.5f);
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10*20, 5), this.mob);
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 6*20, 3), this.mob);
                 }
             }
 
             if (lookAt != null) {
                 this.mob.getLookControl().lookAt(lookAt);
-                mob.setVelocity(lookAt.multiply(1.3));
+                mob.setVelocity(lookAt.multiply(this.mob.shouldRenderOverlay() ? 1.5 : 1.3));
                 mob.setBodyYaw(bodyRot);
             }
         }
